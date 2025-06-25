@@ -213,6 +213,139 @@ Tworzymy obiekt `Statement`, który pozwoli nam na wysłanie zapytania `insertSQ
 
 
 Na koniec zamykamy połączenie z bazą `db.disconnect();`.
+
+Metoda `authenticate` sprawdza czy podana przez użytkownika nazwa i hasła zgadzają się z tymi w bazie i zwraca zależnie od tego `true` / `false`.
+```java
+    public boolean authenticate(String username, String password) throws SQLException {
+        DatabaseConnection db = new DatabaseConnection();
+        db.connect("test.db");
+        Connection conn = db.getConnection();
+
+        String sqlQuery = "SELECT password FROM accounts WHERE name = ?";
+
+        PreparedStatement stmt = conn.prepareStatement(sqlQuery);
+        stmt.setString(1, username);
+
+        ResultSet rslt = stmt.executeQuery();
+
+        if(rslt.next()){
+            String hashedPassword = rslt.getString("password");
+            if(BCrypt.checkpw(password, hashedPassword)){
+                rslt.close();
+                stmt.close();
+                db.disconnect();
+
+                return true;
+            } else {
+                rslt.close();
+                stmt.close();
+                db.disconnect();
+
+                return false;
+            }
+        } else {
+            rslt.close();
+            stmt.close();
+            db.disconnect();
+
+            return false;
+        }
+    }
+```
+Ponownie tworzymy obiekt, zapytanie do bazy i połączenie z bazą.
+```java
+        DatabaseConnection db = new DatabaseConnection();
+        db.connect("test.db");
+        Connection conn = db.getConnection();
+```
+Tworzymy przygotowane zapytanie, w celu uniknięcia złośliwych danych ręcznych.
+```java
+        PreparedStatement stmt = conn.prepareStatement(sqlQuery);
+        stmt.setString(1, username);
+
+        ResultSet rslt = stmt.executeQuery();
+```
+Jeśli znaleźliśmy kolejny rekord z podaną nazwą użytkownika, pobieramy zashawone hasło `hashedPassaword`. Jeśli hasło podane przez użytkownika pasuje do hasła pobranego z bazy `BCrypt.checkpw(password, hashedPassword)`, zwracamy `true` i zamykamy połączenia, jeśli nie pasują zwracamy `false`, gdy nie znajdziemy kolejnego rekordu również zwracamy `false` i zamykamy połączenie. 
+```java
+        if(rslt.next()){
+            String hashedPassword = rslt.getString("password");
+            if(BCrypt.checkpw(password, hashedPassword)){
+                rslt.close();
+                stmt.close();
+                db.disconnect();
+
+                return true;
+            } else {
+                rslt.close();
+                stmt.close();
+                db.disconnect();
+
+                return false;
+            }
+        } else {
+            rslt.close();
+            stmt.close();
+            db.disconnect();
+
+            return false;
+        }
+```
+Metoda `getAccount` zwraca nam nowy obiekt `Account` z pobranymi wartościami z tabeli.
+```java
+    public Account getAccount(String username) throws SQLException {
+        DatabaseConnection db = new DatabaseConnection();
+        db.connect("test.db");
+        Connection conn = db.getConnection();
+
+        String sqlSelect = "SELECT id, name FROM accounts where name = ?";
+
+        PreparedStatement stmt = conn.prepareStatement(sqlSelect);
+        stmt.setString(1, username);
+
+        ResultSet rslt = stmt.executeQuery();
+
+        if(rslt.next()){
+            int id = rslt.getInt("id");
+            String usrnm = rslt.getString("name");
+
+            rslt.close();
+            stmt.close();
+            db.disconnect();
+
+            return new Account(id, usrnm);
+        } else {
+            throw new SQLException("Brak konta.");
+        }
+    }
+```
+Nic się nie zmienia, tworzymy połączenie z bazą, zapytanie do bazy itd.
+```java
+        DatabaseConnection db = new DatabaseConnection();
+        db.connect("test.db");
+        Connection conn = db.getConnection();
+
+        String sqlSelect = "SELECT id, name FROM accounts where name = ?";
+
+        PreparedStatement stmt = conn.prepareStatement(sqlSelect);
+        stmt.setString(1, username);
+
+        ResultSet rslt = stmt.executeQuery();
+```
+Jeśli znajdziemy kolejny rekord z podaną nazwą przez użytkownika, pobieramy za pomocą `int id = rslt.getInt("id");` i `String usrnm = rslt.getString("name");` id oraz nazwę użytkownika z bazy, zamykamy połączenia i zwracamy nowy obiekt `Account`, jeśli nie znajdziemy rekordu zwracamy `SQLException(...)`.
+```java
+        if(rslt.next()){
+            int id = rslt.getInt("id");
+            String usrnm = rslt.getString("name");
+
+            rslt.close();
+            stmt.close();
+            db.disconnect();
+
+            return new Account(id, usrnm);
+        } else {
+            throw new SQLException("Brak konta.");
+        }
+```
 # Klasa Account
 ```java
 package auth;
