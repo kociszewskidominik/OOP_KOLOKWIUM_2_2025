@@ -61,6 +61,16 @@ public class DatabaseConnection {
     }
 }
 ```
+Deklaracja prywatnego pola `connection`, w którym będzie przechowywane aktywne połączenie do bazy.
+```java
+    private java.sql.Connection connection;
+```
+Udostępnienie obiektu `Connection` poza klasę, by inne części aplikacji miały dostęp do obiektu do tworzenia zapytań jak `prepareStatement` lub `createStatement`.
+```java
+    public Connection getConnection() {
+        return connection;
+    }
+```
 # Klasa AccountManager
 ```java
 package auth;
