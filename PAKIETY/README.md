@@ -178,23 +178,6 @@ public class AccountManager {
 
 ```
 Metoda `register` przyjmuję nazwę i hasło podane przez użytkownika.
-
-Tworzymy obiekt, otwieramy plik bazy `test.db` i łączymy się z nią.
-
-`DatabaseConnection db = new DatabaseConnection();`
-
-
-`db.connect("test.db");`
-
-
-`Connection conn = db.getConnection();`
-
-
-Hashujemy podane przez użytkownika jawne hasło.
-```java
-    String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-```
-
 ```java
  public void register(String username, String password) throws SQLException {
         DatabaseConnection db = new DatabaseConnection();
@@ -212,6 +195,24 @@ Hashujemy podane przez użytkownika jawne hasło.
         db.disconnect();
     }
 ```
+Tworzymy obiekt, otwieramy plik bazy `test.db` i łączymy się z nią.
+
+```java
+    DatabaseConnection db = new DatabaseConnection();
+    db.connect("test.db");
+    Connection conn = db.getConnection();
+```
+Hashujemy podane przez użytkownika jawne hasło.
+```java
+    String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+```
+Tworzymy obiekt `Statement`, który pozwoli nam na wysłanie zapytania `insertSQL` do tabeli. 
+
+
+`stmt.executeUpdate(insertSQL);` wykonuje to zapytanie.
+
+
+Na koniec zamykamy połączenie z bazą `db.disconnect();`.
 # Klasa Account
 ```java
 package auth;
