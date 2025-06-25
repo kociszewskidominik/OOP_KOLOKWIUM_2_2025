@@ -71,6 +71,21 @@ Udostępnienie obiektu `Connection` poza klasę, by inne części aplikacji mia�
         return connection;
     }
 ```
+Metoda `connect` służy do połaczęnia się z bazą, przyjmuję ścieżkę do bazy `path`. `= DriveManager.getConnection(...)` otwiera połaczenie z bazą "test.db", jeśli taki nie istnieje stworzy go.
+```java
+    public void connect(String url) throws SQLException {
+        this.connection = DriverManager.getConnection("jdbc:sqlite:" + url);
+    }
+```
+Metoda `disconnect` zamyka połączenie z bazą jeśli nie jest puste lub już wcześniej zamknięte. Na koniec ustawiamy `connection` na `null`, bo obiekt klasy nadal istnieje w pamięci.
+```java
+    public void disconnect() throws SQLException {
+        if(this.connection != null && !this.connection.isClosed())
+            this.connection.close();
+
+        this.connection = null;
+    }
+```
 # Klasa AccountManager
 ```java
 package auth;
