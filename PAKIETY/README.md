@@ -71,7 +71,7 @@ Udostępnienie obiektu `Connection` poza klasę, by inne części aplikacji mia�
         return connection;
     }
 ```
-Metoda `connect` służy do połaczęnia się z bazą, przyjmuję ścieżkę do bazy `path`. `= DriveManager.getConnection(...)` otwiera połaczenie z bazą "test.db", jeśli taki nie istnieje stworzy go.
+Metoda `connect` służy do połaczęnia się z bazą, przyjmuję ścieżkę do bazy `path`. `= DriveManager.getConnection(...)` otwiera połaczenie z bazą, jeśli taka nie istnieje stworzy ją.
 ```java
     public void connect(String url) throws SQLException {
         this.connection = DriverManager.getConnection("jdbc:sqlite:" + url);
@@ -176,6 +176,41 @@ public class AccountManager {
     }
 }
 
+```
+Metoda `register` przyjmuję nazwę i hasło podane przez użytkownika.
+
+Tworzymy obiekt, otwieramy plik bazy `test.db` i łączymy się z nią.
+
+`DatabaseConnection db = new DatabaseConnection();`
+
+
+`db.connect("test.db");`
+
+
+`Connection conn = db.getConnection();`
+
+
+Hashujemy podane przez użytkownika jawne hasło.
+```java
+    String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+```
+
+```java
+ public void register(String username, String password) throws SQLException {
+        DatabaseConnection db = new DatabaseConnection();
+        db.connect("test.db");
+        Connection conn = db.getConnection();
+
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+
+        Statement stmt = conn.createStatement();
+
+        String insertSQL = "INSERT INTO accounts (name, password) VALUES ('" + username + "', '" + hashedPassword + "');";
+
+        stmt.executeUpdate(insertSQL);
+
+        db.disconnect();
+    }
 ```
 # Klasa Account
 ```java
