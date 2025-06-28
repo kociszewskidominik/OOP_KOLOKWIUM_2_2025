@@ -454,13 +454,11 @@ Test `readSongWihExistingIndex()` sprawdza czy piosenka "wzięta" manualnia prze
 ### Zadanie 2c
 Napisz test sprawdzający próbę odczytu piosenki i niepoprawnym indeksie. Wydziel łączenie i rozłączanie się z bazą do oddzielnych metod i nadaj im odpowiednie adnotacje.
 ```java
-    @Test
-    public  void readSongWihNoExistingIndex() throws SQLException {
-        Playlist playlist = new Playlist();
-        playlist.add(new Song(8, "Young Mlody", "what", 69));
-
-        Assert.assertEquals(playlist.get(9), Song.Persistence.read(8));
-    }
+@Test
+public void readSongWithNonExistingIndex() throws SQLException {
+    Optional<Song> maybe = Song.Persistence.read(99999);
+    assertTrue(maybe.isEmpty());
+}
 ```
 ### Zadanie 2d
 Napisz test sparametryzowany metodą zwracającą strumień indeksów i oczekiwanych piosenek.
