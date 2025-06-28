@@ -413,19 +413,21 @@ Zmodyfikuj metodę atSecond tak, aby rzucała wyjątek IndexOutOfBoundsException
 
 Zmodyfikuj metodę atSecond, aby rozróżniała podanie ujemnego czasu i czasu wykraczającego poza czas trwania listy i zapisywała w argumencie message konstruktora IndexOutOfBoundsException odpowiedni napis. Napisz dwa testy sprawdzające każdy z wymienionych przypadków.
 ```java
-    @Test
-    public void negativeSecondsException(){
-        Playlist playlist = new Playlist();
+@Test
+public void negativeSecondsException(){
+    Playlist playlist = new Playlist();
+    IndexOutOfBoundsException ex = assertThrows(IndexOutOfBoundsException.class, () -> playlist.atSecond(-15));
 
-        Assert.assertEquals("Ujemny czas!", playlist.atSecond(-15));
-    }
+    assertEquals("Ujemny czas!", ex.getMessage());
+}
 
-    @Test
-    public void secondsOutOfPlaylistException(){
-        Playlist playlist = new Playlist();
+@Test
+public void secondsOutOfPlaylistException(){
+    Playlist playlist = new Playlist();
+    IndexOutOfBoundsException ex = assertThrows(IndexOutOfBoundsException.class, () -> playlist.atSecond(1));
 
-        Assert.assertEquals("Podany czas nie mieści się!", playlist.atSecond(2137));
-    }
+    assertEquals("Podany czas nie mieści się!", ex.getMessage());
+}
 ```
 W metodzie wyżej zostały dodane dwa warunki, jeden gdy użytkownik poda minusową liczbę sekund, i drugi gdy liczba sekund będzie większa niż liczba sekund wszystkich piosenek.
 
@@ -448,7 +450,7 @@ Napisz test sprawdzający odczyt z bazy danych piosenki o poprawnym indeksie.
         Assert.assertEquals(playlist.get(8), Song.Persistence.read(8));
     }
 ```
-Test `readSongWihExistingIndex()` sprawdza czy piosenka "wzięta" manualnia przez nas `playlist.get(8)`, to tama piosenka którą zwróci zapytanie w metodzie `read()` przy podstawieniu tego samego indeksu.
+Test `readSongWihExistingIndex()` sprawdza czy piosenka "wzięta" manualnia przez nas `playlist.get(8)`, to ta sama piosenka którą zwróci zapytanie w metodzie `read()` przy podstawieniu tego samego indeksu.
 ### Zadanie 2c
 Napisz test sprawdzający próbę odczytu piosenki i niepoprawnym indeksie. Wydziel łączenie i rozłączanie się z bazą do oddzielnych metod i nadaj im odpowiednie adnotacje.
 ```java
