@@ -126,7 +126,7 @@ Jest to skrócony zapis, normalny wyglądałby tak:
          Connection conn = DatabaseConnection.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql);
 ```
-Metoda wstawia wartość typu int we wskazane miejsce, `1` oznacza *w miejscu pierwszego pojawienia się "?"*, a `songId` wartość parametru, co daje nam w tym przypadku np. `...WHERE id = 42`
+Metoda wstawia wartość typu `int` we wskazane miejsce, `1` oznacza "w miejscu pierwszego pojawienia się `?`", a `songId` wartość parametru, co daje nam w tym przypadku np. `...WHERE id = 42`
 ```java
                 ps.setInt(1, songId);
 ```
