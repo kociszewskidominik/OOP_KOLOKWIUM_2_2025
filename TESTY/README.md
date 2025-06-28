@@ -110,7 +110,41 @@ public record Song(int id, String artist, String title, int durationSeconds) {
 }
 
 ```
+`Persistance` - wewnętrzna pomocnicza klasa grupująca operacje na bazie danych.
 
+
+Przygotowanie zapytania SQL do bazy.
+```java
+         String sql = "SELECT id, artist, title, duration_seconds " + "FROM songs WHERE id = ?";
+```
+Tworzymy `PreparedStatement`, łączymy się z bazą danych i przygotowywujemy się do wysyłania zapytań. Dlaczego `PreparedStatement` a nie zwykły `Statement`? Głownie dlatego że będziemy wysyłać do bazy wiele zapytań.
+```java
+         try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql)) {
+```
+Jest to skrócony zapis, normalny wyglądałby tak:
+```java
+         Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql);
+```
+Metoda wstawia wartość typu int we wskazane miejsce, `1` oznacza *w miejscu pierwszego pojawienia się "?"*, a `songId` wartość parametru, co daje nam w tym przypadku np. `...WHERE id = 42`
+```java
+                ps.setInt(1, songId);
+```
+`ResultSet rs` przetrzymuję wyniki z zapytania, `rs.next()` przesuwa "kursor" na kolejny wynik i zwraca `true` jeśli istnieje lub `false`. U nas jeśli będzie `true` to tworzy "kontener" `Optional` z pobranymi wartościami i zwraca go, w innym przypadku zwraca pusty "kontener". Na koniec nie zamykamy manulanie `ResultSet rs`, robi to za nas `try{...}`.
+```java
+                try (ResultSet rs = ps.executeQuery()) {
+
+                    if (rs.next()) {
+                        return Optional.of(new Song(
+                                rs.getInt("id"),
+                                rs.getString("artist"),
+                                rs.getString("title"),
+                                rs.getInt("duration_seconds")
+                        ));
+                    } else {
+                        return Optional.empty();
+                    }
+```
 ### Zadanie 1b
 ### Zadanie 1c
 ### Zadanie 1d
