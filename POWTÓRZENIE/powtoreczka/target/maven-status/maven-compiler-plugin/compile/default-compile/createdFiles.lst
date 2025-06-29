@@ -1,0 +1,6 @@
+org\example\circleapp\Main.class
+org\example\circleapp\server\ClientThread.class
+org\example\circleapp\shared\Dot.class
+org\example\circleapp\client\ServerThread.class
+org\example\circleapp\Controller.class
+org\example\circleapp\server\Server.class
